@@ -1,10 +1,13 @@
 ## Monitor FileShares and others with OpsMgr
 
-### Alert Views:
-![Admin_AlertView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareAlert.png)
 
 ### State Views:
 ![Admin_StateView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareState.png)
+
+
+### Alert Views:
+![Admin_AlertView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareAlert.png)
+
 
 
 
