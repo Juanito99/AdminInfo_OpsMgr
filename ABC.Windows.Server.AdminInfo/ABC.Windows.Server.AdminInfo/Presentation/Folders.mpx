@@ -1,0 +1,38 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Presentation>
+    <Folders>
+
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders" Accessibility="Public" ParentFolder="SC!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
+
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders.State" Accessibility="Public" ParentFolder="ABC.Windows.Server.AdminInfo.Folders"/>
+
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders.Alerts" Accessibility="Public" ParentFolder="ABC.Windows.Server.AdminInfo.Folders"/>
+    
+    </Folders>
+
+    
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders">
+          <Name>ABC Windows Server AdminInfo</Name>
+          <Description></Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders.State">
+          <Name>State</Name>
+          <Description></Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders.Alerts">
+          <Name>Alerts</Name>
+          <Description></Description>
+        </DisplayString>
+        
+        
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

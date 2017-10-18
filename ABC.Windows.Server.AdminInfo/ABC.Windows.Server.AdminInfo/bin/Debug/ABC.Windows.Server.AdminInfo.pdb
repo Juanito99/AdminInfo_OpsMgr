@@ -1,0 +1,40 @@
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*6*10*ClassType
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*10*10*ClassType
+Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.PropertyBag.Filtered*6*8*DataSourceModuleType
+Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.PropertyBag*55*8*DataSourceModuleType
+Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Probe*92*8*ProbeActionModuleType
+Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.MonitorType*130*8*UnitMonitorType
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server*6*8*Discovery
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*52*8*Discovery
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*6*8*UnitMonitor
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share*6*8*View
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share*35*8*View
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders*5*8*Folder
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.State*7*8*Folder
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.Alerts*9*8*Folder
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share.FolderItem*40*8*FolderItem
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share.FolderItem*41*8*FolderItem
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage*36*8*StringResource
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*42*10*DisplayString
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage*46*10*DisplayString
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*56*10*DisplayString*SubElementID*UnderThreshold
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*60*10*DisplayString*SubElementID*OverWarningThreshold
+Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*64*10*DisplayString*SubElementID*OverErrorThreshold
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders*19*10*DisplayString
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.State*24*10*DisplayString
+Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.Alerts*29*10*DisplayString
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share*47*10*DisplayString
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share*51*10*DisplayString
+Project.mpx*ABC.Windows.Server.AdminInfo*5*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*27*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*32*10*DisplayString*SubElementID*ComputerName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*37*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*42*10*DisplayString*SubElementID*ComputerName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*47*10*DisplayString*SubElementID*Description
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*52*10*DisplayString*SubElementID*FileSystemPath
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*57*10*DisplayString*SubElementID*Key
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*62*10*DisplayString*SubElementID*Name
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*67*10*DisplayString*SubElementID*NTFSPermissions
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*72*10*DisplayString*SubElementID*SharePermissions
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server*88*10*DisplayString
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*92*10*DisplayString

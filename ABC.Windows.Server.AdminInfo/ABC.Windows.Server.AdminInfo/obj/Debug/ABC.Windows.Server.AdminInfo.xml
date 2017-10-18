@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ManagementPack SchemaVersion="2.0" ContentReadable="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Manifest>
+    <Identity>
+      <ID>ABC.Windows.Server.AdminInfo</ID>
+      <Version>1.0.0.23</Version>
+    </Identity>
+    <Name>ABC.Windows.Server.AdminInfo</Name>
+    <References>
+      <Reference Alias="SC">
+        <ID>Microsoft.SystemCenter.Library</ID>
+        <Version>7.0.8433.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="Windows">
+        <ID>Microsoft.Windows.Library</ID>
+        <Version>7.5.8501.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="Health">
+        <ID>System.Health.Library</ID>
+        <Version>7.0.8433.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="System">
+        <ID>System.Library</ID>
+        <Version>7.5.8501.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+    </References>
+  </Manifest>
+  <TypeDefinitions>
+    <EntityTypes>
+      <ClassTypes>
+        <ClassType ID="ABC.Windows.Server.AdminInfo.Server" Base="Windows!Microsoft.Windows.ComputerRole" Accessibility="Internal" Abstract="false" Hosted="true" Singleton="false">
+          <Property ID="ComputerName" Type="string" AutoIncrement="false" Key="true" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+        </ClassType>
+        <ClassType ID="ABC.Windows.Server.AdminInfo.Share" Accessibility="Public" Abstract="false" Base="System!System.LogicalEntity" Hosted="false" Singleton="false" Extension="false">
+          <Property ID="Key" Type="string" AutoIncrement="false" Key="true" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="ComputerName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="Name" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="FileSystemPath" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="SharePermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+        </ClassType>
+      </ClassTypes>
+    </EntityTypes>
+    <ModuleTypes>
+      <DataSourceModuleType ID="ABC.AdminInfo.ThreeState.Test.PropertyBag.Filtered" Accessibility="Internal" Batching="false">
+        <Configuration>
+          <xsd:element name="IntervalSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="SyncTime" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="MonitorItem" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Key" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Threshold" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+          <OverrideableParameter ID="Threshold" Selector="$Config/Threshold$" ParameterType="string" />
+        </OverrideableParameters>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <DataSource ID="DS" TypeID="ABC.AdminInfo.ThreeState.Test.PropertyBag">
+                <IntervalSeconds>$Config/IntervalSeconds$</IntervalSeconds>
+                <SyncTime>$Config/SyncTime$</SyncTime>
+                <MonitorItem>$Config/MonitorItem$</MonitorItem>
+                <Threshold>$Config/Threshold$</Threshold>
+                <Key>$Config/Key$</Key>
+              </DataSource>
+              <ConditionDetection ID="Filter" TypeID="System!System.ExpressionFilter">
+                <Expression>
+                  <SimpleExpression>
+                    <ValueExpression>
+                      <XPathQuery Type="String">Property[@Name="Key"]</XPathQuery>
+                    </ValueExpression>
+                    <Operator>Equal</Operator>
+                    <ValueExpression>
+                      <Value Type="String">$Config/Key$</Value>
+                    </ValueExpression>
+                  </SimpleExpression>
+                </Expression>
+              </ConditionDetection>
+            </MemberModules>
+            <Composition>
+              <Node ID="Filter">
+                <Node ID="DS" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>System!System.PropertyBagData</OutputType>
+      </DataSourceModuleType>
+      <DataSourceModuleType ID="ABC.AdminInfo.ThreeState.Test.PropertyBag" Accessibility="Internal" Batching="false">
+        <Configuration>
+          <xsd:element name="IntervalSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="SyncTime" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="MonitorItem" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Threshold" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Key" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+          <OverrideableParameter ID="Threshold" Selector="$Config/Threshold$" ParameterType="string" />
+        </OverrideableParameters>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <DataSource ID="Schedule" TypeID="System!System.SimpleScheduler">
+                <IntervalSeconds>$Config/IntervalSeconds$</IntervalSeconds>
+                <SyncTime>$Config/SyncTime$</SyncTime>
+              </DataSource>
+              <ProbeAction ID="Probe" TypeID="ABC.AdminInfo.ThreeState.Probe">
+                <MonitorItem>$Config/MonitorItem$</MonitorItem>
+                <Threshold>$Config/Threshold$</Threshold>
+              </ProbeAction>
+            </MemberModules>
+            <Composition>
+              <Node ID="Probe">
+                <Node ID="Schedule" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>System!System.PropertyBagData</OutputType>
+      </DataSourceModuleType>
+      <ProbeActionModuleType ID="ABC.AdminInfo.ThreeState.Probe" Accessibility="Internal" Batching="false" PassThrough="false">
+        <Configuration>
+          <xsd:element name="MonitorItem" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Threshold" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <ProbeAction ID="PSScript" TypeID="Windows!Microsoft.Windows.PowerShellPropertyBagProbe">
+                <ScriptName>MonitorAdminInfoThreeState.ps1</ScriptName>
+                <ScriptBody><![CDATA[param($MonitorItem,$Threshold,$ComputerName)
+$api = New-Object -ComObject 'MOM.ScriptAPI'
+
+$Global:Error.Clear()
+$ErrorActionPreference = 'Continue'
+
+$testedAt = "Tested on: $(Get-Date -Format u) / $(([TimeZoneInfo]::Local).DisplayName)"
+
+#$api.LogScriptEvent('Monitor AdminInfo Three State.ps1',9001,4,"MonitorAdminInfoThreeState Computer: $($ComputerName) - MonitorItem $($MonitorItem)")
+
+if ($MonitorItem -eq 'Share') {
+
+	$classAdminInfoShare          = Get-SCOMClass -Name 'ABC.Windows.Server.AdminInfo.Share'
+	$classAdminInfoShareInstances = Get-SCOMClassInstance -Class $classAdminInfoShare		
+		
+	foreach ($adminInfoShare in $classAdminInfoShareInstances) {
+		
+		$Key              = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].Key'.Value
+		$ComputerName     = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].ComputerName'.Value
+		$Name             = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].Name'.Value
+		$FSPath           = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].FileSystemPath'.Value
+		$Description      = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].Description'.Value
+		$NTFSPermissions  = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].NTFSPermissions'.Value		
+		$sharePermissions = $adminInfoShare.'[ABC.Windows.Server.AdminInfo.Share].SharePermissions'.Value
+
+		$state            = ''
+		$regPat           = '(Everyone|BUILTIN\\Users|Authenticated\sUsers);\s?Allow;\s?(Modify|FullControl)'		
+		$regPat           = '(Everyone|BUILTIN\\Users|Authenticated\sUsers);\s?Allow;[a-zA-Z,\s]{1,}?(Modify|Change|FullControl)'
+
+		if ($NTFSPermissions -match $regPat) {
+			$state       = 'Yellow'			
+			$alertInfo   = 'Pontential risky permission found. Please correct.'
+			if ($sharePermissions -match $regPat) {
+				$state     = 'Red'
+				$alertInfo = 'Dangerous permission found. Please correct asap.'
+			}			
+		} else {
+			$state = 'Green'
+		} #END if ($NTFSPermissions -match $regPat)		
+
+		$supplement = " Share: $($Name) / $($FSPath) `n NTFS Permission: $($NTFSPermissions) `n Share Permissions: $($sharePermissions)`n Alert Info: $($alertInfo)"
+		
+		$bag = $api.CreatePropertybag()					
+		$bag.AddValue("Key",$Key)
+		$bag.AddValue("Name",$Name)		
+		$bag.AddValue("State",$state)				
+		$bag.AddValue("Supplement",$supplement)		
+		$bag.AddValue("TestedAt",$testedAt)			
+		$bag	
+
+	} #END foreach ($adminInfoShare in $classAdminInfoShareInstances)	
+	
+
+}]]></ScriptBody>
+                <Parameters>
+                  <Parameter>
+                    <Name>MonitorItem</Name>
+                    <Value>$Config/MonitorItem$</Value>
+                  </Parameter>
+                  <Parameter>
+                    <Name>Threshold</Name>
+                    <Value>$Config/Threshold$</Value>
+                  </Parameter>
+                </Parameters>
+                <TimeoutSeconds>300</TimeoutSeconds>
+              </ProbeAction>
+            </MemberModules>
+            <Composition>
+              <Node ID="PSScript" />
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>System!System.PropertyBagData</OutputType>
+        <InputType>System!System.BaseData</InputType>
+      </ProbeActionModuleType>
+    </ModuleTypes>
+    <MonitorTypes>
+      <UnitMonitorType ID="ABC.AdminInfo.ThreeState.Test.MonitorType" Accessibility="Internal">
+        <MonitorTypeStates>
+          <MonitorTypeState ID="UnderThreshold" NoDetection="false" />
+          <MonitorTypeState ID="OverWarningThreshold" NoDetection="false" />
+          <MonitorTypeState ID="OverErrorThreshold" NoDetection="false" />
+        </MonitorTypeStates>
+        <Configuration>
+          <xsd:element name="IntervalSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="SyncTime" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="MonitorItem" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Key" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Threshold" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+          <OverrideableParameter ID="Threshold" Selector="$Config/Threshold$" ParameterType="string" />
+        </OverrideableParameters>
+        <MonitorImplementation>
+          <MemberModules>
+            <DataSource ID="DataSource" TypeID="ABC.AdminInfo.ThreeState.Test.PropertyBag.Filtered">
+              <IntervalSeconds>$Config/IntervalSeconds$</IntervalSeconds>
+              <SyncTime>$Config/SyncTime$</SyncTime>
+              <MonitorItem>$Config/MonitorItem$</MonitorItem>
+              <Key>$Config/Key$</Key>
+              <Threshold>$Config/Threshold$</Threshold>
+            </DataSource>
+            <ProbeAction ID="PassThru" TypeID="System!System.PassThroughProbe" />
+            <ProbeAction ID="Probe" TypeID="ABC.AdminInfo.ThreeState.Probe">
+              <MonitorItem>$Config/MonitorItem$</MonitorItem>
+              <Threshold>$Config/Threshold$</Threshold>
+            </ProbeAction>
+            <ConditionDetection ID="FilterUnderThreshold" TypeID="System!System.ExpressionFilter">
+              <Expression>
+                <SimpleExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">Property[@Name='State']</XPathQuery>
+                  </ValueExpression>
+                  <Operator>Equal</Operator>
+                  <ValueExpression>
+                    <Value Type="String">Green</Value>
+                  </ValueExpression>
+                </SimpleExpression>
+              </Expression>
+            </ConditionDetection>
+            <ConditionDetection ID="FilterOverWarningThreshold" TypeID="System!System.ExpressionFilter">
+              <Expression>
+                <SimpleExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">Property[@Name='State']</XPathQuery>
+                  </ValueExpression>
+                  <Operator>Equal</Operator>
+                  <ValueExpression>
+                    <Value Type="String">Yellow</Value>
+                  </ValueExpression>
+                </SimpleExpression>
+              </Expression>
+            </ConditionDetection>
+            <ConditionDetection ID="FilterOverErrorThreshold" TypeID="System!System.ExpressionFilter">
+              <Expression>
+                <SimpleExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">Property[@Name='State']</XPathQuery>
+                  </ValueExpression>
+                  <Operator>Equal</Operator>
+                  <ValueExpression>
+                    <Value Type="String">Red</Value>
+                  </ValueExpression>
+                </SimpleExpression>
+              </Expression>
+            </ConditionDetection>
+          </MemberModules>
+          <RegularDetections>
+            <RegularDetection MonitorTypeStateID="UnderThreshold">
+              <Node ID="FilterUnderThreshold">
+                <Node ID="DataSource" />
+              </Node>
+            </RegularDetection>
+            <RegularDetection MonitorTypeStateID="OverWarningThreshold">
+              <Node ID="FilterOverWarningThreshold">
+                <Node ID="DataSource" />
+              </Node>
+            </RegularDetection>
+            <RegularDetection MonitorTypeStateID="OverErrorThreshold">
+              <Node ID="FilterOverErrorThreshold">
+                <Node ID="DataSource" />
+              </Node>
+            </RegularDetection>
+          </RegularDetections>
+        </MonitorImplementation>
+      </UnitMonitorType>
+    </MonitorTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Discoveries>
+      <Discovery ID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server" Target="Windows!Microsoft.Windows.Server.Computer" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="ABC.Windows.Server.AdminInfo.Server" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Windows!Microsoft.Windows.FilteredRegistryDiscoveryProvider">
+          <ComputerName>$Target/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</ComputerName>
+          <RegistryAttributeDefinitions>
+            <RegistryAttributeDefinition>
+              <AttributeName>KeyExists</AttributeName>
+              <Path>SOFTWARE\Microsoft</Path>
+              <PathType>0</PathType>
+              <AttributeType>0</AttributeType>
+            </RegistryAttributeDefinition>
+          </RegistryAttributeDefinitions>
+          <Frequency>86400</Frequency>
+          <ClassId>$MPElement[Name="ABC.Windows.Server.AdminInfo.Server"]$</ClassId>
+          <InstanceSettings>
+            <Settings>
+              <Setting>
+                <Name>$MPElement[Name="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Name>
+                <Value>$Target/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+              </Setting>
+              <Setting>
+                <Name>$MPElement[Name="System!System.Entity"]/DisplayName$</Name>
+                <Value>$Target/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+              </Setting>
+              <Setting>
+                <Name>$MPElement[Name="ABC.Windows.Server.AdminInfo.Server"]/ComputerName$</Name>
+                <Value>$Target/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+              </Setting>
+            </Settings>
+          </InstanceSettings>
+          <Expression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery>Values/KeyExists</XPathQuery>
+              </ValueExpression>
+              <Operator>Equal</Operator>
+              <ValueExpression>
+                <Value>true</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </Expression>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share" Target="ABC.Windows.Server.AdminInfo.Server" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="ABC.Windows.Server.AdminInfo.Share" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Windows!Microsoft.Windows.TimedPowerShell.DiscoveryProvider">
+          <IntervalSeconds>3600</IntervalSeconds>
+          <SyncTime />
+          <ScriptName>DiscoverAdminInfoItems.ps1</ScriptName>
+          <ScriptBody><![CDATA[param($sourceId,$managedEntityId,$discoveryItem,$ComputerName)
+
+$api           = New-Object -ComObject 'MOM.ScriptAPI'
+$discoveryData = $api.CreateDiscoveryData(0, $sourceId, $managedEntityId)
+
+if ($discoveryItem -eq 'Share') {
+
+	$shares    = Get-WmiObject -Class Win32_Share 	
+	$shareList = New-Object -TypeName System.Collections.ArrayList
+
+	foreach ($share in $shares) {
+  
+		if (($share.Name -notmatch '(?im)^[a-z]{1,1}\$') -and ($share.Name -notmatch '(?im)^[admin]{5,5}\$') -and ($share.Name -notmatch '(?im)^[ipc]{3,3}\$') -and `
+			($share.Name -notmatch '(?im)^SMS{3,8}\$?|^print\$|(?im)SCCMContentLib\$'))  {      
+			
+			If (($share.Path -notmatch '(?i)DFSRoots\$?') -and ($share.Path -notmatch '(?i)SMSPKG[a-z]\$') -and ($share.Path -notmatch '(?i)SYSVOL')) { 
+
+				$shareAccessInfo = ''
+				$ntfsAccessInfo  = ''    
+	
+				$fileAccessControlList = Get-Acl -Path $($share.Path) | Select-Object -ExpandProperty Access | Select-Object -Property FileSystemRights, AccessControlType, IdentityReference    
+	
+				foreach ($fileAccessControlEntry in $fileAccessControlList) {
+					if (($fileAccessControlEntry.FileSystemRights -notmatch '\d') -and ($fileAccessControlEntry.IdentityReference -notmatch '(?i)Builtin\\Administrators|NT\sAUTHORITY\\SYSTEM|NT\sSERVICE\\TrustedInstaller')) {      
+						$ntfsAccessInfo += "$($fileAccessControlEntry.IdentityReference); $($fileAccessControlEntry.AccessControlType); $($fileAccessControlEntry.FileSystemRights)" + ' | '  
+					}
+				} #END foreach ($fileAccessControlEntry in $fileAccessControlList)
+
+				$ntfsAccessInfo = $ntfsAccessInfo.Substring(0,$ntfsAccessInfo.Length - 3)
+				$ntfsAccessInfo = $ntfsAccessInfo -replace ',\s?Synchronize',''   
+	
+				$permissionStringTest = $ntfsAccessInfo -replace ';',''
+				$permissionStringTest = $permissionStringTest -replace ' ',''			
+	   
+				$shareSecuritySetting    = Get-WmiObject -Class Win32_LogicalShareSecuritySetting -Filter "Name='$($share.Name)'"               
+				$shareSecurityDescriptor = $shareSecuritySetting.GetSecurityDescriptor()
+				$shareAcccessControlList = $shareSecurityDescriptor.Descriptor.DACL          
+	
+				foreach($shareAccessControlEntry in $shareAcccessControlList) {
+	
+					$trustee    = $($shareAccessControlEntry.Trustee).Name      
+					$accessMask = $shareAccessControlEntry.AccessMask
+	  
+					if($shareAccessControlEntry.AceType -eq 0) {
+						$accessType = 'Allow'
+					} else {
+						$accessType = 'Deny'
+					}
+		
+					if ($accessMask -match '2032127|1245631|1179817') {          
+						if ($accessMask -eq 2032127) {
+							$accessMaskInfo = 'FullControl'
+						} elseif ($accessMask -eq 1179817) {
+							$accessMaskInfo = 'Read'
+						} elseif ($accessMask -eq 1245631) {
+							$accessMaskInfo = 'Change'
+						} else {
+							$accessMaskInfo = 'Unknown'
+						}
+						$shareAccessInfo += "$trustee; $accessType; $accessMaskInfo" + ' | '
+					}            
+	
+				} #END foreach($shareAccessControlEntry in $shareAcccessControlList)
+		   
+				if ($shareAccessInfo -match '|') {
+					$shareAccessInfo = $shareAccessInfo.Substring(0,$shareAccessInfo.Length - 3)
+				}               
+	
+				if ($permissionStringTest) {    
+					$myShareHash = @{'Name'=$share.Name}
+					$myShareHash.Add('FileSystemPath',$share.Path )       
+					$myShareHash.Add('Description',$share.Description)        
+					$myShareHash.Add('NTFSPermissions',$ntfsAccessInfo)
+					$myShareHash.Add('SharePermissions',$shareAccessInfo)
+					$myShareObject = New-Object -TypeName PSObject -Property $myShareHash
+					$myShareObject.PSObject.TypeNames.Insert(0,'MyShareObject')  
+		
+					$null = $shareList.Add($myShareObject)
+				}
+
+			} #END If (($share.Path -notmatch '(?i)DFSRoots\$?') -and ($share.Path -notmatch '(?i)SMSPKG[a-z]\$') -and ($share.Path -notmatch '(?i)SYSVOL'))
+
+		} #END if (($share.Name -notmatch '(?im)^[a-z]{1,1}\$') -and ($share.Name -notmatch '(?im)^[admin]{5,5}\$') -and ($share.Name -notmatch '(?im)^[ipc]{3,3}\$') )
+
+	} #END foreach ($share in $shares)
+
+	if ($shareList.Count -gt 0) {
+	
+		foreach ($shareItem in $shareList) {
+	
+			$Key         = $ComputerName + '-' + $($shareItem.Name)
+			$displayName = 'Share ' + $($shareItem.Name) + ' On ' + $ComputerName
+
+			$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']$")
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/ComputerName$",$ComputerName)
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Key$",$Key)	
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Name$",$shareItem.Name)
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/FileSystemPath$",$shareItem.FileSystemPath)		
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Description$",$shareItem.Description)				
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/NTFSPermissions$",$shareItem.NTFSPermissions)							
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/SharePermissions$",$shareItem.SharePermissions)
+			$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+			$discoveryData.AddInstance($instance)	
+	
+		} #END foreach ($shareItem in $shareList)
+			
+	} else {		
+
+		$myShareHash = @{'Name'='No custom share found.'}
+		$myShareHash.Add('FileSystemPath','Na')       
+		$myShareHash.Add('Description','Na')        
+		$myShareHash.Add('NTFSPermissions','Na')
+		$myShareHash.Add('SharePermissions','Na')
+		$shareItem = New-Object -TypeName PSObject -Property $myShareHash
+		$shareItem.PSObject.TypeNames.Insert(0,'MyShareObject')  
+
+		$Key         = $ComputerName + '-' + $($shareItem.Name)
+		$displayName = 'Share ' + $($shareItem.Name) + ' On ' + $ComputerName
+
+		$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']$")
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/ComputerName$",$ComputerName)
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Key$",$Key)	
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Name$",$shareItem.Name)
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/FileSystemPath$",$shareItem.FileSystemPath)		
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Description$",$shareItem.Description)				
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/NTFSPermissions$",$shareItem.NTFSPermissions)						
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/SharePermissions$",$shareItem.SharePermissions)
+		$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+		$discoveryData.AddInstance($instance)	
+
+	}	
+
+}
+
+$discoveryData]]></ScriptBody>
+          <Parameters>
+            <Parameter>
+              <Name>sourceId</Name>
+              <Value>$MPElement$</Value>
+            </Parameter>
+            <Parameter>
+              <Name>managedEntityId</Name>
+              <Value>$Target/Id$</Value>
+            </Parameter>
+            <Parameter>
+              <Name>discoveryItem</Name>
+              <Value>Share</Value>
+            </Parameter>
+            <Parameter>
+              <Name>ComputerName</Name>
+              <Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+            </Parameter>
+          </Parameters>
+          <TimeoutSeconds>300</TimeoutSeconds>
+        </DataSource>
+      </Discovery>
+    </Discoveries>
+    <Monitors>
+      <UnitMonitor ID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share" Accessibility="Internal" Enabled="true" Target="ABC.Windows.Server.AdminInfo.Share" ParentMonitorID="Health!System.Health.ConfigurationState" Remotable="true" Priority="Normal" TypeID="ABC.AdminInfo.ThreeState.Test.MonitorType" ConfirmDelivery="false">
+        <Category>ConfigurationHealth</Category>
+        <AlertSettings AlertMessage="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>MatchMonitorHealth</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Data/Context/Property[@Name='TestedAt']$</AlertParameter1>
+            <AlertParameter2>$Data/Context/Property[@Name='State']$</AlertParameter2>
+            <AlertParameter3>$Data/Context/Property[@Name='Supplement']$</AlertParameter3>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="UnderThreshold" MonitorTypeStateID="UnderThreshold" HealthState="Success" />
+          <OperationalState ID="OverWarningThreshold" MonitorTypeStateID="OverWarningThreshold" HealthState="Warning" />
+          <OperationalState ID="OverErrorThreshold" MonitorTypeStateID="OverErrorThreshold" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <IntervalSeconds>900</IntervalSeconds>
+          <SyncTime />
+          <MonitorItem>Share</MonitorItem>
+          <Key>$Target/Property[Type="ABC.Windows.Server.AdminInfo.Share"]/Key$</Key>
+          <Threshold>NotInUse</Threshold>
+        </Configuration>
+      </UnitMonitor>
+    </Monitors>
+  </Monitoring>
+  <Presentation>
+    <Views>
+      <View ID="ABC.Windows.Server.AdminInfo.View.State.Share" Accessibility="Internal" Target="ABC.Windows.Server.AdminInfo.Share" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+        <Category>Operations</Category>
+        <Presentation>
+          <ColumnInfo Index="0" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>ComputerName</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share/ComputerName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="1" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="220">
+            <Name>Name</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share/Name</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="2" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="220">
+            <Name>FileSystemPath</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share/FileSystemPath</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="3" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="320">
+            <Name>SharePermissions</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share/SharePermissions</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="4" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="320">
+            <Name>NTFSPermissions</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share/NTFSPermissions</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="5" Grouped="false" IsSortable="true" Sorted="true" SortIndex="0" Visible="true" SortOrder="Descending" Width="320">
+            <Name>State</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Share</Id>
+          </ColumnInfo>
+        </Presentation>
+      </View>
+      <View ID="ABC.Windows.Server.AdminInfo.View.Alerts.Share" Accessibility="Internal" Target="ABC.Windows.Server.AdminInfo.Share" TypeID="SC!Microsoft.SystemCenter.AlertViewType" Visible="true">
+        <Category>Operations</Category>
+      </View>
+    </Views>
+    <Folders>
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders" Accessibility="Public" ParentFolder="SC!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders.State" Accessibility="Public" ParentFolder="ABC.Windows.Server.AdminInfo.Folders" />
+      <Folder ID="ABC.Windows.Server.AdminInfo.Folders.Alerts" Accessibility="Public" ParentFolder="ABC.Windows.Server.AdminInfo.Folders" />
+    </Folders>
+    <FolderItems>
+      <FolderItem ElementID="ABC.Windows.Server.AdminInfo.View.State.Share" Folder="ABC.Windows.Server.AdminInfo.Folders.State" ID="ABC.Windows.Server.AdminInfo.View.State.Share.FolderItem" />
+      <FolderItem ElementID="ABC.Windows.Server.AdminInfo.View.Alerts.Share" Folder="ABC.Windows.Server.AdminInfo.Folders.Alerts" ID="ABC.Windows.Server.AdminInfo.View.Alerts.Share.FolderItem" />
+    </FolderItems>
+    <StringResources>
+      <StringResource ID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage" />
+    </StringResources>
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share">
+          <Name>AdminInfo Share Monitor</Name>
+          <Description>Description for the new unit monitor.</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage">
+          <Name>Dangerous permissions on share</Name>
+          <Description>Please check. Dangerous permissions on share detect.
+
+TestedAt: {0}
+Last check Result: {1}
+
+
+Supplement: {2}</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share" SubElementID="UnderThreshold">
+          <Name>UnderThreshold</Name>
+          <Description>UnderThreshold</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share" SubElementID="OverWarningThreshold">
+          <Name>OverWarningThreshold</Name>
+          <Description>OverWarningThreshold</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share" SubElementID="OverErrorThreshold">
+          <Name>OverErrorThreshold</Name>
+          <Description>OverErrorThreshold</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders">
+          <Name>ABC Windows Server AdminInfo</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders.State">
+          <Name>State</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Folders.Alerts">
+          <Name>Alerts</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.View.State.Share">
+          <Name>Share State</Name>
+          <Description>Description for the new view</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.View.Alerts.Share">
+          <Name>Share Alerts</Name>
+          <Description>Description for the new view</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo">
+          <Name>ABC Windows Server AdminInfo</Name>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Server">
+          <Name>ABC Windows Server.AdminInfo Server</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Server" SubElementID="ComputerName">
+          <Name>ComputerName</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share">
+          <Name>ABC Windows Server.AdminInfo Share</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="ComputerName">
+          <Name>ComputerName</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="Description">
+          <Name>Description</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="FileSystemPath">
+          <Name>FileSystem Path</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="Key">
+          <Name>Key</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="Name">
+          <Name>Name</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="NTFSPermissions">
+          <Name>NTFS Permissions</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Share" SubElementID="SharePermissions">
+          <Name>Share Permissions</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server">
+          <Name>Discovery AdminInfo Server</Name>
+          <Description>Description for the new discovery.</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share">
+          <Name>Discovery AdminInfo Share</Name>
+          <Description>Description for the new discovery.</Description>
+        </DisplayString>
+      </DisplayStrings>
+      <KnowledgeArticles></KnowledgeArticles>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPack>

@@ -1,0 +1,53 @@
+<TemplateGroup>
+  <Instances>
+    <Instance ID="Instance1cb8bbbf42bb4bd8ba0ce5a2d4aaa2da" Type="Microsoft.SystemCenter.Authoring.CodeGeneration.Monitoring.UnitMonitor" Version="1.0.0.0">
+      <UnitMonitorConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <MonitorType>ABC.AdminInfo.ThreeState.Test.MonitorType</MonitorType>
+        <MonitorConfig>&lt;IntervalSeconds&gt;900&lt;/IntervalSeconds&gt;&lt;SyncTime /&gt;&lt;MonitorItem&gt;Share&lt;/MonitorItem&gt;&lt;Key&gt;$Target/Property[Type="ABC.Windows.Server.AdminInfo.Share"]/Key$&lt;/Key&gt;&lt;Threshold&gt;NotInUse&lt;/Threshold&gt;</MonitorConfig>
+        <MonitorOperationalStates>
+          <OperationalState>
+            <OperationalStateId>UnderThreshold</OperationalStateId>
+            <OperationalStateDisplayName>UnderThreshold</OperationalStateDisplayName>
+            <MonitorTypeStateId>UnderThreshold</MonitorTypeStateId>
+            <HealthState>Success</HealthState>
+          </OperationalState>
+          <OperationalState>
+            <OperationalStateId>OverWarningThreshold</OperationalStateId>
+            <OperationalStateDisplayName>OverWarningThreshold</OperationalStateDisplayName>
+            <MonitorTypeStateId>OverWarningThreshold</MonitorTypeStateId>
+            <HealthState>Warning</HealthState>
+          </OperationalState>
+          <OperationalState>
+            <OperationalStateId>OverErrorThreshold</OperationalStateId>
+            <OperationalStateDisplayName>OverErrorThreshold</OperationalStateDisplayName>
+            <MonitorTypeStateId>OverErrorThreshold</MonitorTypeStateId>
+            <HealthState>Error</HealthState>
+          </OperationalState>
+        </MonitorOperationalStates>
+        <ParentMonitor>Health!System.Health.ConfigurationState</ParentMonitor>
+        <Accessibility>Internal</Accessibility>
+        <Id>Monitor.AdminInfo.Share</Id>
+        <DisplayName>AdminInfo Share Monitor</DisplayName>
+        <Description>Description for the new unit monitor.</Description>
+        <Target>ABC.Windows.Server.AdminInfo.Share</Target>
+        <Enabled>true</Enabled>
+        <Category>ConfigurationHealth</Category>
+        <Remotable>true</Remotable>
+        <Priority>Normal</Priority>
+        <AlertAutoResolve>true</AlertAutoResolve>
+        <AlertOnState>Error</AlertOnState>
+        <AlertPriority>Normal</AlertPriority>
+        <AlertSeverity>MatchMonitorHealth</AlertSeverity>
+        <AlertName>Dangerous permissions on share</AlertName>
+        <AlertDescription>Please check. Dangerous permissions on share detect.
+
+TestedAt: $Data/Context/Property[@Name='TestedAt']$
+Last check Result: $Data/Context/Property[@Name='State']$
+
+
+Supplement: $Data/Context/Property[@Name='Supplement']$</AlertDescription>
+        <ConfirmDelivery>false</ConfirmDelivery>
+      </UnitMonitorConfig>
+    </Instance>
+  </Instances>
+</TemplateGroup>
