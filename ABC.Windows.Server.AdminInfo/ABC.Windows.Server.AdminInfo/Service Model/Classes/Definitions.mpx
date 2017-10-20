@@ -10,11 +10,11 @@
         <ClassType ID="ABC.Windows.Server.AdminInfo.Share" Accessibility="Public" Abstract="false" Base="System!System.LogicalEntity" Hosted="false" Singleton="false" Extension="false">
           <Property ID="Key" Type="string" AutoIncrement="false" Key="true" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
           <Property ID="ComputerName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
-          <Property ID="Name" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
-          <Property ID="FileSystemPath" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
-          <Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
-          <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />                    
-          <Property ID="SharePermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="Name" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="4096" MinLength="0" Required="false" Scale="0" />
+          <Property ID="FileSystemPath" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="4096" MinLength="0" Required="false" Scale="0" />
+          <Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
+          <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />                    
+          <Property ID="SharePermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
         </ClassType>
         
       </ClassTypes>
