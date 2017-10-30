@@ -12,12 +12,12 @@ Find shares and alert in case of weak permissions is the primary intention of th
 
 
 ### More information on:
-[Documentation](https://github.com/Juanito99/F5_BIGIP_OpsMgr/blob/master/Documentation/AdminInfo_ManagementPack_for_OpsMgr.pdf)
+[Documentation](https://github.com/Juanito99/AdminInfo_OpsMgr/blob/master/Documentation/AdminInfo_ManagementPack_for_OpsMgr.pdf)
 
 
 ### Downloads:
-[ManagementPack](https://github.com/Juanito99/F5_BIGIP_OpsMgr/blob/master/ABC.F5.BIGIP/ABC.F5.BIGIP/bin/Debug/ABC.F5.BIGIP.mpb) 
-[Source for VSAE 2015](https://github.com/Juanito99/F5_BIGIP_OpsMgr/tree/master/ABC.F5.BIGIP)
+[ManagementPack](https://github.com/Juanito99/AdminInfo_OpsMgr/blob/master/ABC.Windows.Server.AdminInfo/ABC.Windows.Server.AdminInfo/bin/Debug/ABC.Windows.Server.AdminInfo.mpb) 
+[Source for VSAE 2015](https://github.com/Juanito99/AdminInfo_OpsMgr/tree/master/ABC.Windows.Server.AdminInfo/ABC.Windows.Server.AdminInfo)
 
 
 
