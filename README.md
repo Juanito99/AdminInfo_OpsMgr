@@ -1,4 +1,5 @@
 ## Monitor FileShares and others with OpsMgr
+Find shares and alert in case of weak permissions is the primary intention of this free Management Pack. – Other purposes will come.
 
 
 ### State Views:
@@ -10,13 +11,13 @@
 
 
 
+### More information on:
+[Documentation](https://github.com/Juanito99/F5_BIGIP_OpsMgr/blob/master/Documentation/AdminInfo_ManagementPack_for_OpsMgr.pdf)
 
-### Introduction:
-Giving application developers or supporting 3rd parties administrative access to servers is sometimes needed. With a few clicks, a file share is created, providing convenient way to transfer files from and to the server. Unfortunately, keeping the default permissions can lead in some unwanted results.
-Recently, having malicious code which scans the network and encrypts everything that can be accessed may cause serious service outages.
 
-To automatically find file-shares with weak permissions and fix them before they can be misused I authored a small Management Pack for SCOM 2012 R2 (and higher). 
-
+### Downloads:
+[ManagementPack](https://github.com/Juanito99/F5_BIGIP_OpsMgr/blob/master/ABC.F5.BIGIP/ABC.F5.BIGIP/bin/Debug/ABC.F5.BIGIP.mpb) 
+[Source for VSAE 2015](https://github.com/Juanito99/F5_BIGIP_OpsMgr/tree/master/ABC.F5.BIGIP)
 
 
 
