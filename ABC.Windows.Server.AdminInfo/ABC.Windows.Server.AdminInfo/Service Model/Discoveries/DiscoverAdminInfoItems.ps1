@@ -130,6 +130,88 @@ if ($discoveryItem -eq 'Share') {
 
 	}	
 
+} elseif ($discoveryItem -eq 'OS') {
+
+	$Key         = 'OS' + ' On ' + $ComputerName
+	$displayName = $Key -replace ' ','-'
+
+	$regPat         = '[0-9]{8}'
+	$bootInfo       = wmic os get lastbootuptime
+	$bootDateNumber = Select-String -InputObject $bootInfo -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value
+	$bootDate       = ([DateTime]::ParseExact($bootDateNumber,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture))
+	$lastBootTime   = $bootDate | Get-Date -Format 'yyyy-MM-dd'
+	
+		
+	$soft32All       = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | Select-Object DisplayName, Publisher, InstallDate
+	$soft32Filtered  = $soft32All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled32Sofware             = $soft32Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled32SoftwareInstallDate = $lastInstalled32Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled32SoftwareName        = $lastInstalled32Sofware.DisplayName
+  
+	$soft64All       = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | `
+										Select-Object DisplayName, Publisher, InstallDate
+
+	$soft64Filtered  = $soft64All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled64Sofware              = $soft64Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled64SoftwareInstallDate  = $lastInstalled64Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled64SoftwareName         = $lastInstalled64Sofware.DisplayName
+  
+	if ($lastInstalled32SoftwareInstallDate -gt $lastInstalled64SoftwareInstallDate) {
+		$lastInstalledSoftwareInstallDate = $lastInstalled32SoftwareInstallDate
+		$SoftwareName        = $lastInstalled32SoftwareName		
+	} else {
+		$lastInstalledSoftwareInstallDate = $lastInstalled64SoftwareInstallDate
+		$SoftwareName        = $lastInstalled64SoftwareName		
+	}		
+
+
+	$regPat                         = 'KB[0-9]{7}'
+	$Session                        = New-Object -ComObject "Microsoft.Update.Session"
+	$Searcher                       = $Session.CreateUpdateSearcher()
+	$historyCount                   = $Searcher.GetTotalHistoryCount()
+	$allHotfixes                    = $Searcher.QueryHistory(0, $historyCount) | Select-Object Date, @{Name='KBNo';Expression={(Select-String -InputObject $_.Title -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value)}}
+	$lastHotfix                     = $allHotfixes | Sort-Object -Descending -Property Date | Sort-Object -Descending -Property KBNo | Select-Object -First 1
+
+	$HotfixInstallationDate = $lastHotfix.Date | Get-Date -Format 'yyyy-MM-dd'
+	$HotfixName        = $lastHotfix.KBNo
+
+
+	$profilesDir          = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList' | Select-Object -ExpandProperty ProfilesDirectory
+	$lastLoggedOnInfo     = Get-ChildItem -Path $profilesDir | Select-Object Name, LastWriteTime | Sort-Object -Property LastwriteTime -Descending | Select-Object -First 1
+	$lastLoggedOnUserId   = $($lastLoggedOnInfo.Name).ToUpper()
+	$LastLoggedOnDate = $lastLoggedOnInfo.LastWriteTime | Get-Date -Format 'yyyy-MM-dd'
+		
+
+	$noOfDaysDiff = (New-TimeSpan -Start $lastBootTime -End $HotfixInstallationDate).Days
+	if($noOfDaysDiff -gt 1) {
+		$sCCMBootPending = "Yes, since $noOfDaysDiff days"
+	} else {
+		$sCCMBootPending = "No"
+	}	
+
+	$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']$")
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Server']/ComputerName$",$ComputerName)	
+	$instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$",$ComputerName)
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastBootTime$",$lastBootTime)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareInstallationDate$",$lastInstalledSoftwareInstallDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareName$",$SoftwareName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixInstallationDate$",$HotfixInstallationDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixName$",$HotfixName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnUserId$",$lastLoggedOnUserId)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnDate$",$LastLoggedOnDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/PatchBootPending$",$sCCMBootPending)	
+	$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+	$discoveryData.AddInstance($instance)
+
+
+} else {
+
+	$foo = 'DiscovyerItem not specified.'	
+
 }
 
 $discoveryData

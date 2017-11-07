@@ -13,8 +13,19 @@
           <Property ID="Name" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="4096" MinLength="0" Required="false" Scale="0" />
           <Property ID="FileSystemPath" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="4096" MinLength="0" Required="false" Scale="0" />
           <Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
-          <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />                    
+          <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
           <Property ID="SharePermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
+        </ClassType>
+        
+        <ClassType ID="ABC.Windows.Server.AdminInfo.OS" Base="ABC.Windows.Server.AdminInfo.Server" Accessibility="Internal" Abstract="false" Hosted="true" Singleton="false">
+          <Property ID="LastBootTime" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="SoftwareInstallationDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="SoftwareName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="HotfixInstallationDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="HotfixName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="LastLoggedOnUserId" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="LastLoggedOnDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="PatchBootPending" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
         </ClassType>
         
       </ClassTypes>
@@ -73,7 +84,56 @@
           <Name>Share Permissions</Name>
           <Description></Description>
         </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS">
+          <Name>ABC Windows Server.AdminInfo Server</Name>
+          <Description></Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastBootTime">
+          <Name>Last BootTime</Name>
+          <Description>Last BootTime</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="HotfixInstallationDate">
+          <Name>Hotfix Installation Date</Name>
+          <Description>InstallationDate of most current installed Hotfix</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="HotfixName">
+          <Name>Hotfix Name</Name>
+          <Description>Name of most current installed Hotfix</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="SoftwareName">
+          <Name>Software Name</Name>
+          <Description>InstallationDate of most current installed Software</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="SoftwareInstallationDate">
+          <Name>Software Installation Date</Name>
+          <Description>InstallationDate of most current installed Hotfix</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastLoggedOnDate">
+          <Name>Last LoggedOn Date</Name>
+          <Description>Date of last logged on user</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastLoggedOnUserId">
+          <Name>Last LoggedOn UserId</Name>
+          <Description>SamAccountName of last logged on user</Description>
+        </DisplayString>
+
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="PatchBootPending">
+          <Name>PatchBoot Pending</Name>
+          <Description></Description>
+        </DisplayString>
+
         
+        
+        
+
       </DisplayStrings>
     </LanguagePack>
   </LanguagePacks>

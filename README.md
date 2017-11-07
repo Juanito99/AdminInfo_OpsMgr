@@ -1,5 +1,9 @@
 ## Monitor FileShares and others with OpsMgr
-Find shares and alert in case of weak permissions is the primary intention of this free Management Pack. – Other purposes will come.
+This MP intents to give Windows Administrators useful information about their Server environment.
+
+Current it contains two main parts
+1)	Find shares and alert in case of weak permissions 
+2)	Display ‘good to know’ information which can help to facilitate trouble shooting.
 
 
 ### State Views:
@@ -8,6 +12,10 @@ Find shares and alert in case of weak permissions is the primary intention of th
 
 ### Alert Views:
 ![Admin_AlertView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareAlert.png)
+
+
+### OS Info:
+![Admin_OSInfo](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_OSInfo.png)
 
 
 

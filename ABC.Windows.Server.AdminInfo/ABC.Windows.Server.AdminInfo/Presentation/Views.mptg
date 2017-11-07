@@ -27,5 +27,19 @@
         <Category>Operations</Category>
       </CustomViewConfig>
     </Instance>
+    <Instance ID="Instancee20d9bef3f744f4682e5d7bc8c12e993" Type="Microsoft.SystemCenter.Authoring.CodeGeneration.Monitoring.CustomView" Version="1.0.0.0">
+      <CustomViewConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <ViewFolder>ABC.Windows.Server.AdminInfo.Folders.State</ViewFolder>
+        <ViewType>SC!Microsoft.SystemCenter.StateViewType</ViewType>
+        <ViewConfiguration>&lt;Presentation&gt;&lt;ColumnInfo Index="0" Grouped="false" IsSortable="true" Sorted="true" SortIndex="0" Visible="true" SortOrder="Ascending" Width="120"&gt;&lt;Name&gt;ComputerName&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.Server/ComputerName&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="1" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120"&gt;&lt;Name&gt;LastLoggedOnUserId &lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/LastLoggedOnUserId&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="2" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100"&gt;&lt;Name&gt;LastLoggedOnDate&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/LastLoggedOnDate&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="3" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120"&gt;&lt;Name&gt;SoftwareName&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/SoftwareName&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="4" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100"&gt;&lt;Name&gt;SoftwareInstallationDate&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/SoftwareInstallationDate&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="5" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120"&gt;&lt;Name&gt;HotfixName&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/HotfixName&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="6" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100"&gt;&lt;Name&gt;HotfixInstallationDate&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/HotfixInstallationDate&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="7" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100"&gt;&lt;Name&gt;LastBootTime&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/LastBootTime&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;ColumnInfo Index="8" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120"&gt;&lt;Name&gt;PatchBootPending&lt;/Name&gt;&lt;Id&gt;ABC.Windows.Server.AdminInfo.OS/PatchBootPending&lt;/Id&gt;&lt;/ColumnInfo&gt;&lt;/Presentation&gt;</ViewConfiguration>
+        <Visible>true</Visible>
+        <Accessibility>Internal</Accessibility>
+        <Id>View.State.OS</Id>
+        <DisplayName>OS Info</DisplayName>
+        <Description>Description for the new view</Description>
+        <Target>ABC.Windows.Server.AdminInfo.OS</Target>
+        <Category>Operations</Category>
+      </CustomViewConfig>
+    </Instance>
   </Instances>
 </TemplateGroup>

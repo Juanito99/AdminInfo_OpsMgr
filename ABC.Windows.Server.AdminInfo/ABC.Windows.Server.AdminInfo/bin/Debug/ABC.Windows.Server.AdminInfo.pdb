@@ -1,19 +1,23 @@
 Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*6*10*ClassType
 Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*10*10*ClassType
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*20*10*ClassType
 Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.PropertyBag.Filtered*6*8*DataSourceModuleType
 Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.PropertyBag*55*8*DataSourceModuleType
 Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Probe*92*8*ProbeActionModuleType
 Health Model\Modules.mpx*ABC.AdminInfo.ThreeState.Test.MonitorType*130*8*UnitMonitorType
 Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server*6*8*Discovery
-Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*52*8*Discovery
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.OS*52*8*Discovery
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*83*8*Discovery
 Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*6*8*UnitMonitor
 Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share*6*8*View
 Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share*35*8*View
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.OS*38*8*View
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders*5*8*Folder
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.State*7*8*Folder
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.Alerts*9*8*Folder
-Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share.FolderItem*40*8*FolderItem
-Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share.FolderItem*41*8*FolderItem
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share.FolderItem*81*8*FolderItem
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share.FolderItem*82*8*FolderItem
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.OS.FolderItem*83*8*FolderItem
 Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage*36*8*StringResource
 Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share*42*10*DisplayString
 Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage*46*10*DisplayString
@@ -23,18 +27,29 @@ Health Model\Monitors.mptg.mpx*ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Sh
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders*19*10*DisplayString
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.State*24*10*DisplayString
 Presentation\Folders.mpx*ABC.Windows.Server.AdminInfo.Folders.Alerts*29*10*DisplayString
-Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share*47*10*DisplayString
-Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share*51*10*DisplayString
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.Share*89*10*DisplayString
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.Alerts.Share*93*10*DisplayString
+Presentation\Views.mptg.mpx*ABC.Windows.Server.AdminInfo.View.State.OS*97*10*DisplayString
 Project.mpx*ABC.Windows.Server.AdminInfo*5*10*DisplayString
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*27*10*DisplayString
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*32*10*DisplayString*SubElementID*ComputerName
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*37*10*DisplayString
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*42*10*DisplayString*SubElementID*ComputerName
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*47*10*DisplayString*SubElementID*Description
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*52*10*DisplayString*SubElementID*FileSystemPath
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*57*10*DisplayString*SubElementID*Key
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*62*10*DisplayString*SubElementID*Name
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*67*10*DisplayString*SubElementID*NTFSPermissions
-Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*72*10*DisplayString*SubElementID*SharePermissions
-Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server*88*10*DisplayString
-Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*92*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*38*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Server*43*10*DisplayString*SubElementID*ComputerName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*48*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*53*10*DisplayString*SubElementID*ComputerName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*58*10*DisplayString*SubElementID*Description
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*63*10*DisplayString*SubElementID*FileSystemPath
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*68*10*DisplayString*SubElementID*Key
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*73*10*DisplayString*SubElementID*Name
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*78*10*DisplayString*SubElementID*NTFSPermissions
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.Share*83*10*DisplayString*SubElementID*SharePermissions
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*88*10*DisplayString
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*93*10*DisplayString*SubElementID*LastBootTime
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*98*10*DisplayString*SubElementID*HotfixInstallationDate
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*103*10*DisplayString*SubElementID*HotfixName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*108*10*DisplayString*SubElementID*SoftwareName
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*113*10*DisplayString*SubElementID*SoftwareInstallationDate
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*118*10*DisplayString*SubElementID*LastLoggedOnDate
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*123*10*DisplayString*SubElementID*LastLoggedOnUserId
+Service Model\Classes\Definitions.mpx*ABC.Windows.Server.AdminInfo.OS*128*10*DisplayString*SubElementID*PatchBootPending
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server*119*10*DisplayString
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.OS*123*10*DisplayString
+Service Model\Discoveries\Discoveries.mptg.mpx*ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share*127*10*DisplayString

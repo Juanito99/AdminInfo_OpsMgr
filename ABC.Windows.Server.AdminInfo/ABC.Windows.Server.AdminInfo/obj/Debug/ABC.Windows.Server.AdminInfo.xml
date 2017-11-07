@@ -3,7 +3,7 @@
   <Manifest>
     <Identity>
       <ID>ABC.Windows.Server.AdminInfo</ID>
-      <Version>1.0.0.26</Version>
+      <Version>1.0.0.39</Version>
     </Identity>
     <Name>ABC.Windows.Server.AdminInfo</Name>
     <References>
@@ -43,6 +43,16 @@
           <Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
           <Property ID="NTFSPermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
           <Property ID="SharePermissions" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="32768" MinLength="0" Required="false" Scale="0" />
+        </ClassType>
+        <ClassType ID="ABC.Windows.Server.AdminInfo.OS" Base="ABC.Windows.Server.AdminInfo.Server" Accessibility="Internal" Abstract="false" Hosted="true" Singleton="false">
+          <Property ID="LastBootTime" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="SoftwareInstallationDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="SoftwareName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="HotfixInstallationDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="HotfixName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="LastLoggedOnUserId" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="LastLoggedOnDate" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
+          <Property ID="PatchBootPending" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
         </ClassType>
       </ClassTypes>
     </EntityTypes>
@@ -354,6 +364,253 @@ if ($MonitorItem -eq 'Share') {
           </Expression>
         </DataSource>
       </Discovery>
+      <Discovery ID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.OS" Target="ABC.Windows.Server.AdminInfo.Server" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="ABC.Windows.Server.AdminInfo.OS" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Windows!Microsoft.Windows.TimedPowerShell.DiscoveryProvider">
+          <IntervalSeconds>28800</IntervalSeconds>
+          <SyncTime />
+          <ScriptName>DiscoverAdminInfoItems.ps1</ScriptName>
+          <ScriptBody><![CDATA[param($sourceId,$managedEntityId,$discoveryItem,$ComputerName)
+
+$api           = New-Object -ComObject 'MOM.ScriptAPI'
+$discoveryData = $api.CreateDiscoveryData(0, $sourceId, $managedEntityId)
+
+if ($discoveryItem -eq 'Share') {
+
+	$shares    = Get-WmiObject -Class Win32_Share 	
+	$shareList = New-Object -TypeName System.Collections.ArrayList
+
+	foreach ($share in $shares) {
+  
+		if (($share.Name -notmatch '(?im)^[a-z]{1,1}\$') -and ($share.Name -notmatch '(?im)^[admin]{5,5}\$') -and ($share.Name -notmatch '(?im)^[ipc]{3,3}\$') -and `
+			($share.Name -notmatch '(?im)^SMS{3,8}\$?|^print\$|(?im)SCCMContentLib\$'))  {      
+			
+			If (($share.Path -notmatch '(?i)DFSRoots\$?') -and ($share.Path -notmatch '(?i)SMSPKG[a-z]\$') -and ($share.Path -notmatch '(?i)SYSVOL')) { 
+
+				$shareAccessInfo = ''
+				$ntfsAccessInfo  = ''    
+	
+				$fileAccessControlList = Get-Acl -Path $($share.Path) | Select-Object -ExpandProperty Access | Select-Object -Property FileSystemRights, AccessControlType, IdentityReference    
+	
+				foreach ($fileAccessControlEntry in $fileAccessControlList) {
+					if (($fileAccessControlEntry.FileSystemRights -notmatch '\d') -and ($fileAccessControlEntry.IdentityReference -notmatch '(?i)Builtin\\Administrators|NT\sAUTHORITY\\SYSTEM|NT\sSERVICE\\TrustedInstaller')) {      
+						$ntfsAccessInfo += "$($fileAccessControlEntry.IdentityReference); $($fileAccessControlEntry.AccessControlType); $($fileAccessControlEntry.FileSystemRights)" + ' | '  
+					}
+				} #END foreach ($fileAccessControlEntry in $fileAccessControlList)
+
+				$ntfsAccessInfo = $ntfsAccessInfo.Substring(0,$ntfsAccessInfo.Length - 3)
+				$ntfsAccessInfo = $ntfsAccessInfo -replace ',\s?Synchronize',''   
+	
+				$permissionStringTest = $ntfsAccessInfo -replace ';',''
+				$permissionStringTest = $permissionStringTest -replace ' ',''			
+	   
+				$shareSecuritySetting    = Get-WmiObject -Class Win32_LogicalShareSecuritySetting -Filter "Name='$($share.Name)'"               
+				$shareSecurityDescriptor = $shareSecuritySetting.GetSecurityDescriptor()
+				$shareAcccessControlList = $shareSecurityDescriptor.Descriptor.DACL          
+	
+				foreach($shareAccessControlEntry in $shareAcccessControlList) {
+	
+					$trustee    = $($shareAccessControlEntry.Trustee).Name      
+					$accessMask = $shareAccessControlEntry.AccessMask
+	  
+					if($shareAccessControlEntry.AceType -eq 0) {
+						$accessType = 'Allow'
+					} else {
+						$accessType = 'Deny'
+					}
+		
+					if ($accessMask -match '2032127|1245631|1179817') {          
+						if ($accessMask -eq 2032127) {
+							$accessMaskInfo = 'FullControl'
+						} elseif ($accessMask -eq 1179817) {
+							$accessMaskInfo = 'Read'
+						} elseif ($accessMask -eq 1245631) {
+							$accessMaskInfo = 'Change'
+						} else {
+							$accessMaskInfo = 'Unknown'
+						}
+						$shareAccessInfo += "$trustee; $accessType; $accessMaskInfo" + ' | '
+					}            
+	
+				} #END foreach($shareAccessControlEntry in $shareAcccessControlList)
+		   
+				if ($shareAccessInfo -match '|') {
+					$shareAccessInfo = $shareAccessInfo.Substring(0,$shareAccessInfo.Length - 3)
+				}               
+	
+				if ($permissionStringTest) {    
+					$myShareHash = @{'Name'=$share.Name}
+					$myShareHash.Add('FileSystemPath',$share.Path )       
+					$myShareHash.Add('Description',$share.Description)        
+					$myShareHash.Add('NTFSPermissions',$ntfsAccessInfo)
+					$myShareHash.Add('SharePermissions',$shareAccessInfo)
+					$myShareObject = New-Object -TypeName PSObject -Property $myShareHash
+					$myShareObject.PSObject.TypeNames.Insert(0,'MyShareObject')  
+		
+					$null = $shareList.Add($myShareObject)
+				}
+
+			} #END If (($share.Path -notmatch '(?i)DFSRoots\$?') -and ($share.Path -notmatch '(?i)SMSPKG[a-z]\$') -and ($share.Path -notmatch '(?i)SYSVOL'))
+
+		} #END if (($share.Name -notmatch '(?im)^[a-z]{1,1}\$') -and ($share.Name -notmatch '(?im)^[admin]{5,5}\$') -and ($share.Name -notmatch '(?im)^[ipc]{3,3}\$') )
+
+	} #END foreach ($share in $shares)
+
+	if ($shareList.Count -gt 0) {
+	
+		foreach ($shareItem in $shareList) {
+	
+			$Key         = $ComputerName + '-' + $($shareItem.Name)
+			$displayName = 'Share ' + $($shareItem.Name) + ' On ' + $ComputerName
+
+			$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']$")
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/ComputerName$",$ComputerName)
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Key$",$Key)	
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Name$",$shareItem.Name)
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/FileSystemPath$",$shareItem.FileSystemPath)		
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Description$",$shareItem.Description)				
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/NTFSPermissions$",$shareItem.NTFSPermissions)							
+			$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/SharePermissions$",$shareItem.SharePermissions)
+			$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+			$discoveryData.AddInstance($instance)	
+	
+		} #END foreach ($shareItem in $shareList)
+			
+	} else {		
+
+		$myShareHash = @{'Name'='No custom share found.'}
+		$myShareHash.Add('FileSystemPath','Na')       
+		$myShareHash.Add('Description','Na')        
+		$myShareHash.Add('NTFSPermissions','Na')
+		$myShareHash.Add('SharePermissions','Na')
+		$shareItem = New-Object -TypeName PSObject -Property $myShareHash
+		$shareItem.PSObject.TypeNames.Insert(0,'MyShareObject')  
+
+		$Key         = $ComputerName + '-' + $($shareItem.Name)
+		$displayName = 'Share ' + $($shareItem.Name) + ' On ' + $ComputerName
+
+		$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']$")
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/ComputerName$",$ComputerName)
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Key$",$Key)	
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Name$",$shareItem.Name)
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/FileSystemPath$",$shareItem.FileSystemPath)		
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/Description$",$shareItem.Description)				
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/NTFSPermissions$",$shareItem.NTFSPermissions)						
+		$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Share']/SharePermissions$",$shareItem.SharePermissions)
+		$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+		$discoveryData.AddInstance($instance)	
+
+	}	
+
+} elseif ($discoveryItem -eq 'OS') {
+
+	$Key         = 'OS' + ' On ' + $ComputerName
+	$displayName = $Key -replace ' ','-'
+
+	$regPat         = '[0-9]{8}'
+	$bootInfo       = wmic os get lastbootuptime
+	$bootDateNumber = Select-String -InputObject $bootInfo -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value
+	$bootDate       = ([DateTime]::ParseExact($bootDateNumber,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture))
+	$lastBootTime   = $bootDate | Get-Date -Format 'yyyy-MM-dd'
+	
+		
+	$soft32All       = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | Select-Object DisplayName, Publisher, InstallDate
+	$soft32Filtered  = $soft32All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled32Sofware             = $soft32Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled32SoftwareInstallDate = $lastInstalled32Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled32SoftwareName        = $lastInstalled32Sofware.DisplayName
+  
+	$soft64All       = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | `
+										Select-Object DisplayName, Publisher, InstallDate
+
+	$soft64Filtered  = $soft64All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled64Sofware              = $soft64Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled64SoftwareInstallDate  = $lastInstalled64Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled64SoftwareName         = $lastInstalled64Sofware.DisplayName
+  
+	if ($lastInstalled32SoftwareInstallDate -gt $lastInstalled64SoftwareInstallDate) {
+		$lastInstalledSoftwareInstallDate = $lastInstalled32SoftwareInstallDate
+		$SoftwareName        = $lastInstalled32SoftwareName		
+	} else {
+		$lastInstalledSoftwareInstallDate = $lastInstalled64SoftwareInstallDate
+		$SoftwareName        = $lastInstalled64SoftwareName		
+	}		
+
+
+	$regPat                         = 'KB[0-9]{7}'
+	$Session                        = New-Object -ComObject "Microsoft.Update.Session"
+	$Searcher                       = $Session.CreateUpdateSearcher()
+	$historyCount                   = $Searcher.GetTotalHistoryCount()
+	$allHotfixes                    = $Searcher.QueryHistory(0, $historyCount) | Select-Object Date, @{Name='KBNo';Expression={(Select-String -InputObject $_.Title -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value)}}
+	$lastHotfix                     = $allHotfixes | Sort-Object -Descending -Property Date | Sort-Object -Descending -Property KBNo | Select-Object -First 1
+
+	$HotfixInstallationDate = $lastHotfix.Date | Get-Date -Format 'yyyy-MM-dd'
+	$HotfixName        = $lastHotfix.KBNo
+
+
+	$profilesDir          = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList' | Select-Object -ExpandProperty ProfilesDirectory
+	$lastLoggedOnInfo     = Get-ChildItem -Path $profilesDir | Select-Object Name, LastWriteTime | Sort-Object -Property LastwriteTime -Descending | Select-Object -First 1
+	$lastLoggedOnUserId   = $($lastLoggedOnInfo.Name).ToUpper()
+	$LastLoggedOnDate = $lastLoggedOnInfo.LastWriteTime | Get-Date -Format 'yyyy-MM-dd'
+		
+
+	$noOfDaysDiff = (New-TimeSpan -Start $lastBootTime -End $HotfixInstallationDate).Days
+	if($noOfDaysDiff -gt 1) {
+		$sCCMBootPending = "Yes, since $noOfDaysDiff days"
+	} else {
+		$sCCMBootPending = "No"
+	}	
+
+	$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']$")
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Server']/ComputerName$",$ComputerName)	
+	$instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$",$ComputerName)
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastBootTime$",$lastBootTime)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareInstallationDate$",$lastInstalledSoftwareInstallDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareName$",$SoftwareName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixInstallationDate$",$HotfixInstallationDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixName$",$HotfixName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnUserId$",$lastLoggedOnUserId)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnDate$",$LastLoggedOnDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/PatchBootPending$",$sCCMBootPending)	
+	$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+	$discoveryData.AddInstance($instance)
+
+
+} else {
+
+	$foo = 'DiscovyerItem not specified.'	
+
+}
+
+$discoveryData]]></ScriptBody>
+          <Parameters>
+            <Parameter>
+              <Name>sourceId</Name>
+              <Value>$MPElement$</Value>
+            </Parameter>
+            <Parameter>
+              <Name>managedEntityId</Name>
+              <Value>$Target/Id$</Value>
+            </Parameter>
+            <Parameter>
+              <Name>discoveryItem</Name>
+              <Value>OS</Value>
+            </Parameter>
+            <Parameter>
+              <Name>ComputerName</Name>
+              <Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+            </Parameter>
+          </Parameters>
+          <TimeoutSeconds>300</TimeoutSeconds>
+        </DataSource>
+      </Discovery>
       <Discovery ID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share" Target="ABC.Windows.Server.AdminInfo.Server" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
         <Category>Discovery</Category>
         <DiscoveryTypes>
@@ -495,6 +752,88 @@ if ($discoveryItem -eq 'Share') {
 
 	}	
 
+} elseif ($discoveryItem -eq 'OS') {
+
+	$Key         = 'OS' + ' On ' + $ComputerName
+	$displayName = $Key -replace ' ','-'
+
+	$regPat         = '[0-9]{8}'
+	$bootInfo       = wmic os get lastbootuptime
+	$bootDateNumber = Select-String -InputObject $bootInfo -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value
+	$bootDate       = ([DateTime]::ParseExact($bootDateNumber,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture))
+	$lastBootTime   = $bootDate | Get-Date -Format 'yyyy-MM-dd'
+	
+		
+	$soft32All       = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | Select-Object DisplayName, Publisher, InstallDate
+	$soft32Filtered  = $soft32All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled32Sofware             = $soft32Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled32SoftwareInstallDate = $lastInstalled32Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled32SoftwareName        = $lastInstalled32Sofware.DisplayName
+  
+	$soft64All       = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.Publisher -notlike "*Microsoft*" } | `
+										Select-Object DisplayName, Publisher, InstallDate
+
+	$soft64Filtered  = $soft64All | Select-Object DisplayName, Publisher, @{Name='RealDate';Expression={([DateTime]::ParseExact($_.InstallDate,'yyyyMMdd',[Globalization.CultureInfo]::InvariantCulture)) `
+								  | Get-Date -Format 'yyyy-MM-dd'}}   
+
+	$lastInstalled64Sofware              = $soft64Filtered | Sort-Object -Property RealDate -Descending | Select-Object -First 1
+	$lastInstalled64SoftwareInstallDate  = $lastInstalled64Sofware.RealDate | Get-Date -Format 'yyyy-MM-dd'
+	$lastInstalled64SoftwareName         = $lastInstalled64Sofware.DisplayName
+  
+	if ($lastInstalled32SoftwareInstallDate -gt $lastInstalled64SoftwareInstallDate) {
+		$lastInstalledSoftwareInstallDate = $lastInstalled32SoftwareInstallDate
+		$SoftwareName        = $lastInstalled32SoftwareName		
+	} else {
+		$lastInstalledSoftwareInstallDate = $lastInstalled64SoftwareInstallDate
+		$SoftwareName        = $lastInstalled64SoftwareName		
+	}		
+
+
+	$regPat                         = 'KB[0-9]{7}'
+	$Session                        = New-Object -ComObject "Microsoft.Update.Session"
+	$Searcher                       = $Session.CreateUpdateSearcher()
+	$historyCount                   = $Searcher.GetTotalHistoryCount()
+	$allHotfixes                    = $Searcher.QueryHistory(0, $historyCount) | Select-Object Date, @{Name='KBNo';Expression={(Select-String -InputObject $_.Title -Pattern $regPat | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value)}}
+	$lastHotfix                     = $allHotfixes | Sort-Object -Descending -Property Date | Sort-Object -Descending -Property KBNo | Select-Object -First 1
+
+	$HotfixInstallationDate = $lastHotfix.Date | Get-Date -Format 'yyyy-MM-dd'
+	$HotfixName        = $lastHotfix.KBNo
+
+
+	$profilesDir          = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList' | Select-Object -ExpandProperty ProfilesDirectory
+	$lastLoggedOnInfo     = Get-ChildItem -Path $profilesDir | Select-Object Name, LastWriteTime | Sort-Object -Property LastwriteTime -Descending | Select-Object -First 1
+	$lastLoggedOnUserId   = $($lastLoggedOnInfo.Name).ToUpper()
+	$LastLoggedOnDate = $lastLoggedOnInfo.LastWriteTime | Get-Date -Format 'yyyy-MM-dd'
+		
+
+	$noOfDaysDiff = (New-TimeSpan -Start $lastBootTime -End $HotfixInstallationDate).Days
+	if($noOfDaysDiff -gt 1) {
+		$sCCMBootPending = "Yes, since $noOfDaysDiff days"
+	} else {
+		$sCCMBootPending = "No"
+	}	
+
+	$instance = $discoveryData.CreateClassInstance("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']$")
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.Server']/ComputerName$",$ComputerName)	
+	$instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$",$ComputerName)
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastBootTime$",$lastBootTime)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareInstallationDate$",$lastInstalledSoftwareInstallDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/SoftwareName$",$SoftwareName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixInstallationDate$",$HotfixInstallationDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/HotfixName$",$HotfixName)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnUserId$",$lastLoggedOnUserId)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/LastLoggedOnDate$",$LastLoggedOnDate)	
+	$instance.AddProperty("$MPElement[Name='ABC.Windows.Server.AdminInfo.OS']/PatchBootPending$",$sCCMBootPending)	
+	$instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $displayName)
+	$discoveryData.AddInstance($instance)
+
+
+} else {
+
+	$foo = 'DiscovyerItem not specified.'	
+
 }
 
 $discoveryData]]></ScriptBody>
@@ -583,6 +922,47 @@ $discoveryData]]></ScriptBody>
       <View ID="ABC.Windows.Server.AdminInfo.View.Alerts.Share" Accessibility="Internal" Target="ABC.Windows.Server.AdminInfo.Share" TypeID="SC!Microsoft.SystemCenter.AlertViewType" Visible="true">
         <Category>Operations</Category>
       </View>
+      <View ID="ABC.Windows.Server.AdminInfo.View.State.OS" Accessibility="Internal" Target="ABC.Windows.Server.AdminInfo.OS" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+        <Category>Operations</Category>
+        <Presentation>
+          <ColumnInfo Index="0" Grouped="false" IsSortable="true" Sorted="true" SortIndex="0" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>ComputerName</Name>
+            <Id>ABC.Windows.Server.AdminInfo.Server/ComputerName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="1" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>LastLoggedOnUserId </Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/LastLoggedOnUserId</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="2" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100">
+            <Name>LastLoggedOnDate</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/LastLoggedOnDate</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="3" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>SoftwareName</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/SoftwareName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="4" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100">
+            <Name>SoftwareInstallationDate</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/SoftwareInstallationDate</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="5" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>HotfixName</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/HotfixName</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="6" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100">
+            <Name>HotfixInstallationDate</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/HotfixInstallationDate</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="7" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="100">
+            <Name>LastBootTime</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/LastBootTime</Id>
+          </ColumnInfo>
+          <ColumnInfo Index="8" Grouped="false" IsSortable="true" Sorted="false" SortIndex="-1" Visible="true" SortOrder="Ascending" Width="120">
+            <Name>PatchBootPending</Name>
+            <Id>ABC.Windows.Server.AdminInfo.OS/PatchBootPending</Id>
+          </ColumnInfo>
+        </Presentation>
+      </View>
     </Views>
     <Folders>
       <Folder ID="ABC.Windows.Server.AdminInfo.Folders" Accessibility="Public" ParentFolder="SC!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
@@ -592,6 +972,7 @@ $discoveryData]]></ScriptBody>
     <FolderItems>
       <FolderItem ElementID="ABC.Windows.Server.AdminInfo.View.State.Share" Folder="ABC.Windows.Server.AdminInfo.Folders.State" ID="ABC.Windows.Server.AdminInfo.View.State.Share.FolderItem" />
       <FolderItem ElementID="ABC.Windows.Server.AdminInfo.View.Alerts.Share" Folder="ABC.Windows.Server.AdminInfo.Folders.Alerts" ID="ABC.Windows.Server.AdminInfo.View.Alerts.Share.FolderItem" />
+      <FolderItem ElementID="ABC.Windows.Server.AdminInfo.View.State.OS" Folder="ABC.Windows.Server.AdminInfo.Folders.State" ID="ABC.Windows.Server.AdminInfo.View.State.OS.FolderItem" />
     </FolderItems>
     <StringResources>
       <StringResource ID="ABC.Windows.Server.AdminInfo.Monitor.AdminInfo.Share.AlertMessage" />
@@ -646,6 +1027,10 @@ Supplement: {2}</Description>
           <Name>Share Alerts</Name>
           <Description>Description for the new view</Description>
         </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.View.State.OS">
+          <Name>OS Info</Name>
+          <Description>Description for the new view</Description>
+        </DisplayString>
         <DisplayString ElementID="ABC.Windows.Server.AdminInfo">
           <Name>ABC Windows Server AdminInfo</Name>
         </DisplayString>
@@ -689,8 +1074,48 @@ Supplement: {2}</Description>
           <Name>Share Permissions</Name>
           <Description></Description>
         </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS">
+          <Name>ABC Windows Server.AdminInfo Server</Name>
+          <Description></Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastBootTime">
+          <Name>Last BootTime</Name>
+          <Description>Last BootTime</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="HotfixInstallationDate">
+          <Name>Hotfix Installation Date</Name>
+          <Description>InstallationDate of most current installed Hotfix</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="HotfixName">
+          <Name>Hotfix Name</Name>
+          <Description>Name of most current installed Hotfix</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="SoftwareName">
+          <Name>Software Name</Name>
+          <Description>InstallationDate of most current installed Software</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="SoftwareInstallationDate">
+          <Name>Software Installation Date</Name>
+          <Description>InstallationDate of most current installed Hotfix</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastLoggedOnDate">
+          <Name>Last LoggedOn Date</Name>
+          <Description>Date of last logged on user</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="LastLoggedOnUserId">
+          <Name>Last LoggedOn UserId</Name>
+          <Description>SamAccountName of last logged on user</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.OS" SubElementID="PatchBootPending">
+          <Name>PatchBoot Pending</Name>
+          <Description></Description>
+        </DisplayString>
         <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Server">
           <Name>Discovery AdminInfo Server</Name>
+          <Description>Description for the new discovery.</Description>
+        </DisplayString>
+        <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.OS">
+          <Name>Discovery AdminInfo OS</Name>
           <Description>Description for the new discovery.</Description>
         </DisplayString>
         <DisplayString ElementID="ABC.Windows.Server.AdminInfo.Discovery.AdminInfo.Share">
