@@ -6,15 +6,15 @@ Current it contains two main parts
 2)	Display ‘good to know’ information which can help to facilitate trouble shooting.
 
 
-### State Views:
+### FileShare - State:
 ![Admin_StateView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareState.png)
 
 
-### Alert Views:
+### FileShare - Alerts:
 ![Admin_AlertView](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_ShareAlert.png)
 
 
-### OS Info:
+### OS Info - State:
 ![Admin_OSInfo](https://raw.githubusercontent.com/Juanito99/AdminInfo_OpsMgr/master/PicturesForGitWebSite/AdminInfoMP_OSInfo.png)
 
 
